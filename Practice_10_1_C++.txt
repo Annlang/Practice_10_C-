@@ -1,0 +1,114 @@
+#include <iostream>
+using namespace std;
+
+
+class vipusknik
+{
+protected:
+    int school;
+    int year;
+    int grade;
+public:
+    vipusknik() { school = 0; year = 0; grade = 0; }
+    vipusknik(int SCHOOL, int YEAR, int GRADE)
+    {
+        school = SCHOOL;
+        year = YEAR;
+        grade = GRADE;
+    }
+    void show() { cout << "hello, i graduated from school number " << school << " in " << year << " year, I always got grade " << grade << " in math" << endl; }
+};
+
+class student
+{
+protected:
+    int kurs;
+    char unik[20];
+public:
+    student() { kurs = 0; unik[0] = '\0'; }
+    student(char* UNIK, int KURS)
+    {
+        int i = 0;
+        while (UNIK[i] != '\0') { unik[i] = UNIK[i]; i++; }
+        unik[i++] = '\0';
+        kurs = KURS;
+    }
+    void show() { cout << "hello, i study in " << unik << " university on " << kurs << " course" << endl; }
+};
+
+class person : public vipusknik, public student
+{
+public:
+    person() :vipusknik(), student() {};
+    person(int SCHOOL, int YEAR, int GRADE, char* UNIK, int KURS) : vipusknik(SCHOOL, YEAR, GRADE), student(UNIK, KURS) {};
+    void show()
+    {
+        cout << "hello, i graduated from school number " << school << " in " << year << " year, I always got grade " << grade << " in math and now i study in " << unik << " university on " << kurs << " course" << endl;
+    }
+    void add(FILE* potok)
+    {
+        fwrite((char*)&school, sizeof(school), 1, potok);
+        fwrite((char*)&year, sizeof(year), 1, potok);
+        fwrite((char*)&grade, sizeof(grade), 1, potok);
+        fwrite((char*)&unik, sizeof(unik), 1, potok);
+        fwrite((char*)&kurs, sizeof(kurs), 1, potok);
+
+    }
+
+};
+
+
+int main()
+{
+    char filename[20] = "new.txt"; char mode[4] = "w";
+    FILE* fp;
+    fopen_s(&fp, filename, mode);
+    if (fp == NULL) cout << "error" << endl; else  cout << "ok" << endl;
+
+    int ch;
+    cout << "1-vipusknik, 2-student, 3-person: " << endl;
+    cin >> ch;
+
+    char a[20];  int b, c, d, e;
+    if (ch == 1)
+    {
+        cout << "enter school number: " << endl;
+        cin >> b;
+        cout << "enter year: " << endl;
+        cin >> c;
+        cout << "enter math grade: " << endl;
+        cin >> d;
+
+        vipusknik chel(b, c, d);
+        chel.show();
+
+    }
+    if (ch == 2)
+    {
+        cout << "enter unik: " << endl;
+        cin >> a;
+        cout << "enter kurs: " << endl;
+        cin >> e;
+
+        student chel(a, e);
+        chel.show();
+
+    }
+    if (ch == 3)
+    {
+        cout << "enter school number: " << endl;
+        cin >> b;
+        cout << "enter year: " << endl;
+        cin >> c;
+        cout << "enter math grade: " << endl;
+        cin >> d;
+        cout << "enter unik: " << endl;
+        cin >> a;
+        cout << "enter kurs: " << endl;
+        cin >> e;
+        person chel(b, c, d, a, e);
+        chel.show();
+        chel.add(fp);
+    }
+    fclose(fp);
+}
